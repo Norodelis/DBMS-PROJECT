@@ -103,6 +103,14 @@ const Profile = () => {
             Change Password
           </Button>
         </form>
+        <Button
+          variant="outlined"
+          color="primary"
+          sx={{ mt: 2 }}
+          onClick={() => window.history.back()}
+        >
+          Go Back
+        </Button>
       </Paper>
     </Container>
   );

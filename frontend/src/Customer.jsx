@@ -6,9 +6,10 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Customer = () => {
+  // Load from localStorage or default to []
+  const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem("cart")) || []);
+  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem("favorites")) || []);
   const [products, setProducts] = useState([]); // State to hold products
-  const [cart, setCart] = useState([]); // State to hold cart items
-  const [favorites, setFavorites] = useState([]); // State to hold favorite items
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +29,14 @@ const Customer = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Save cart/favorites to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+  useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  }, [favorites]);
+
   // Add to Cart
   const handleAddToCart = (product) => {
     const countInCart = cart.filter((p) => p.id === product.id).length;
@@ -38,8 +47,12 @@ const Customer = () => {
     setCart((prevCart) => [...prevCart, product]);
   };
 
-  // Add to Favorites
+  // Add to Favorites (prevent duplicates)
   const handleAddToFavorites = (product) => {
+    if (favorites.some(fav => fav.id === product.id)) {
+      alert("You can only favorite a product once!");
+      return;
+    }
     setFavorites((prevFavorites) => [...prevFavorites, product]);
   };
 

@@ -1,10 +1,19 @@
 import { Container, Typography, Grid, Card, CardContent, CardMedia, Button, Box } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const ViewCart = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const cart = location.state?.cart || [];
+  // Try navigation state, fallback to localStorage
+  const [cart, setCart] = useState(location.state?.cart || JSON.parse(localStorage.getItem("cart")) || []);
+
+  // Remove product from cart
+  const handleRemove = (indexToRemove) => {
+    const updatedCart = cart.filter((_, idx) => idx !== indexToRemove);
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
 
   return (
     <Container>
@@ -34,10 +43,18 @@ const ViewCart = () => {
                 <Button
                   variant="outlined"
                   color="success"
-                  sx={{ mt: 2 }}
+                  sx={{ mt: 2, mr: 1 }}
                   onClick={() => navigate("/checkout", { state: { product } })}
                 >
                   Buy
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  sx={{ mt: 2 }}
+                  onClick={() => handleRemove(index)}
+                >
+                  Remove
                 </Button>
               </CardContent>
             </Card>
@@ -55,6 +72,14 @@ const ViewCart = () => {
           </Button>
         </Box>
       )}
+      <Button
+        variant="outlined"
+        color="primary"
+        sx={{ mt: 2 }}
+        onClick={() => window.history.back()}
+      >
+        Go Back
+      </Button>
     </Container>
   );
 };
